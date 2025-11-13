@@ -1,0 +1,24 @@
+Create  the expenditure calculator using for daily based deleate,update add
+
+ step 1: create index.html file and write code
+ step 2: create style.css file and write code
+ step 3: link style.css file to index.html file
+ step 4: open the body tag in index.html file write the code for header section
+ step 5: next step to open the css file to controle the header section like given flex and 
+ margin padding etc and primary color,secondary color,font size,font family etc
+ step 6: open the index.html file to write the code for container section
+ step 7: next step to open the css file to controle the container section like given flex and
+ given the width height margin padding etc and primary color,secondary color,font size,font family etc
+ step 8: in container we segricate the left-section flex box and right section flex box
+ step 9: next step to open the index.html file to write the code for header Explore aline-center
+ step 10: next step to open the css file to controle the header Explore aline-centerlike given flex and
+padding etc and primary color,secondary color,font size,font family etc
+ step 11: then open the script.js here i have used to sum funtion for the calculate
+ step 12: then i call the placeholder get the input for the what we given and also the same process fotr the add button 
+step 13: add button it should be add the all element for the what we givne the list
+step 14: then we create the del the card we dont want it it will update the calculator also
+step 15: save all the changes and run the index.html file in the browser to see the output
+step 16: make any necessary adjustments based on the output
+step 17: finally project is completed successfully
+step 18: push the code to github repository
+step 19: project end thank you.
