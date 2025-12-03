@@ -1,40 +1,115 @@
-   let expenses = [];
+let entries = JSON.parse(localStorage.getItem("entries")) || [];
+let editingId = null;
 
-    function addExpense() {
-      const item = document.getElementById("item").value.trim();
-      const amount = parseFloat(document.getElementById("amount").value);
 
-      if (item === "" || isNaN(amount) || amount <= 0) {
-        alert("Please enter a valid item and amount.");
+const descInput = document.getElementById("description");
+const amountInput = document.getElementById("amount");
+const entryList = document.getElementById("entry-list");
+
+document.getElementById("add-btn").addEventListener("click", addEntry);
+document.getElementById("reset-btn").addEventListener("click", resetInputs);
+
+document.querySelectorAll("input[name='filter']").forEach(radio =>
+    radio.addEventListener("change", displayEntries)
+);
+
+function addEntry() {
+    const description = descInput.value.trim();
+    const amount = parseFloat(amountInput.value);
+    const type = document.querySelector("input[name='type']:checked").value;
+
+    if (!description || !amount) {
+        alert("Please fill all fields");
         return;
-      }
-
-      expenses.push({ item, amount });
-      document.getElementById("item").value = "";
-      document.getElementById("amount").value = "";
-      updateList();
     }
 
-    function updateList() {
-      const list = document.getElementById("expenseList");
-      const totalEl = document.getElementById("total");
-      list.innerHTML = "";
+    if (editingId) {
+        let entry = entries.find(e => e.id === editingId);
+        entry.description = description;
+        entry.amount = amount;
+        entry.type = type;
+        editingId = null;
+    } else {
+        const newEntry = {
+            id: Date.now(),
+            description,
+            amount,
+            type
+        };
+        entries.push(newEntry);
+    }
 
-      let total = 0;
-      expenses.forEach((expense, index) => {
-        total += expense.amount;
+    saveData();
+    resetInputs();
+    displayEntries();
+}
+
+
+function displayEntries() {
+    entryList.innerHTML = "";
+
+    const filter = document.querySelector("input[name='filter']:checked").value;
+    const filtered = entries.filter(e => (filter === "all" ? true : e.type === filter));
+
+    filtered.forEach(entry => {
         const li = document.createElement("li");
+        li.className = `entry ${entry.type}`;
         li.innerHTML = `
-          <span>${expense.item} - $${expense.amount.toFixed(2)}</span>
-          <button class="remove-btn" onclick="removeExpense(${index})">X</button>
+            <span>${entry.description} - $${entry.amount}</span>
+            <div class="actions">
+                <button onclick="editEntry(${entry.id})">Edit</button>
+                <button onclick="deleteEntry(${entry.id})">Delete</button>
+            </div>
         `;
-        list.appendChild(li);
-      });
+        entryList.appendChild(li);
+    });
 
-      totalEl.textContent = total.toFixed(2);
-    }
+    calculateTotals();
+}
 
-    function removeExpense(index) {
-      expenses.splice(index, 1);
-      updateList();
-    }
+
+function editEntry(id) {
+    const entry = entries.find(e => e.id === id);
+    descInput.value = entry.description;
+    amountInput.value = entry.amount;
+    document.querySelector(`input[value="${entry.type}"]`).checked = true;
+    editingId = id;
+}
+
+function deleteEntry(id) {
+    entries = entries.filter(e => e.id !== id);
+    saveData();
+    displayEntries();
+}
+
+
+function calculateTotals() {
+    const income = entries.filter(e => e.type === "income")
+        .reduce((t, e) => t + e.amount, 0);
+
+    const expense = entries.filter(e => e.type === "expense")
+        .reduce((t, e) => t + e.amount, 0);
+
+    document.getElementById("total-income").innerText = "$" + income;
+    document.getElementById("total-expense").innerText = "$" + expense;
+    document.getElementById("balance").innerText = "$" + (income - expense);
+}
+function resetInputs() {
+    descInput.value = "";
+    amountInput.value = "";
+    
+    // Reset type radio to income
+    document.querySelector("input[name='type'][value='income']").checked = true;
+
+    // Reset filter back to "all"
+    document.querySelector("input[name='filter'][value='all']").checked = true;
+
+    editingId = null;
+
+    displayEntries();
+}
+function saveData() {
+    localStorage.setItem("entries", JSON.stringify(entries));
+}
+
+displayEntries();
